@@ -1,4 +1,4 @@
-package com.viepovsky;
+package com.viepovsky.greeting;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-@WebServlet(name = "Sample get", urlPatterns = {"/api/*"})
+@WebServlet(name = "Greeting", urlPatterns = {"/api/*"})
 public class GreetingServlet extends HttpServlet {
     private static final String NAME_PARAM = "name";
     private static final String LANG_PARAM = "lang";

@@ -1,5 +1,7 @@
-package com.viepovsky;
+package com.viepovsky.greeting;
 
+import com.viepovsky.lang.Lang;
+import com.viepovsky.lang.LangRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -60,7 +62,7 @@ class GreetingServiceTest {
         //Given
         LangRepository mockRepository = new LangRepository() {
             @Override
-            Optional<Lang> findById(Long id) {
+            public Optional<Lang> findById(Long id) {
                 return Optional.empty();
             }
         };
@@ -74,7 +76,7 @@ class GreetingServiceTest {
     private static LangRepository fallbackLangIdRepository() {
         return new LangRepository() {
             @Override
-            Optional<Lang> findById(Long id) {
+            public Optional<Lang> findById(Long id) {
                 if (id.equals(GreetingService.FALLBACK_LANG.getId())) {
                     return Optional.of(new Lang(null, FALLBACK_ID_WELCOME, null));
                 }
@@ -86,7 +88,7 @@ class GreetingServiceTest {
     private static LangRepository alwaysReturnHiRepository() {
         return new LangRepository() {
             @Override
-            Optional<Lang> findById(Long id) {
+            public Optional<Lang> findById(Long id) {
                 return Optional.of(new Lang(null, WELCOME, null));
             }
         };

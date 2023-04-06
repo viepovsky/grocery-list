@@ -1,11 +1,10 @@
-package com.viepovsky;
+package com.viepovsky.lang;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "languages")
-class Lang {
+public class Lang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
