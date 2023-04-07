@@ -1,21 +1,22 @@
-package com.viepovsky.todo;
+package com.viepovsky.tobuy;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "todos")
-class Todo {
+@Table(name = "grocery")
+class ToBuy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String text;
-    private boolean done;
+    private boolean bought;
+    private String created;
 
     /**
      * Hibernate (JPA) needs it.
      */
     @SuppressWarnings("unused")
-    Todo() {
+    ToBuy() {
     }
 
     public Long getId() {
@@ -34,11 +35,19 @@ class Todo {
         this.text = text;
     }
 
-    public boolean isDone() {
-        return done;
+    public boolean isBought() {
+        return bought;
     }
 
-    public void setDone(boolean done) {
-        this.done = done;
+    public void setBought(boolean done) {
+        this.bought = done;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
     }
 }

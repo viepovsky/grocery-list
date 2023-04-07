@@ -35,8 +35,7 @@
 
         <!-- Names the annotated entity class -->
         <mapping class="com.viepovsky.lang.Lang"/>
-        <mapping class="com.viepovsky.todo.Todo"/>
-
+        <mapping class="com.viepovsky.tobuy.ToBuy"/>
 
     </session-factory>
 

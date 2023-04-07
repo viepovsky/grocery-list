@@ -18,9 +18,9 @@ class GreetingServiceTest {
         LangRepository mockRepository = alwaysReturnHiRepository();
         GreetingService SUT = new GreetingService(mockRepository);
         //When
-        var result = SUT.prepareGreeting(null, "-1");
+        var result = SUT.prepareGreeting(null, -1L);
         //Then
-        assertEquals(WELCOME + " " + "unknown user!", result);
+        assertEquals(WELCOME + " " + "unknown user !", result);
     }
 
     @Test
@@ -30,9 +30,9 @@ class GreetingServiceTest {
         GreetingService SUT = new GreetingService(mockRepository);
         var name = "test";
         //When
-        var result = SUT.prepareGreeting(name, "-1");
+        var result = SUT.prepareGreeting(name, -1L);
         //Then
-        assertEquals(WELCOME + " " + name + "!", result);
+        assertEquals(WELCOME + " " + name + " !", result);
     }
 
     @Test
@@ -43,18 +43,7 @@ class GreetingServiceTest {
         //When
         var result = SUT.prepareGreeting(null, null);
         //Then
-        assertEquals(FALLBACK_ID_WELCOME + " " + GreetingService.FALLBACK_NAME + "!", result);
-    }
-
-    @Test
-    public void test_prepareGreeting_textLang_returnsGreetingWithFallbackIdLang() {
-        //Given
-        LangRepository mockRepository = fallbackLangIdRepository();
-        GreetingService SUT = new GreetingService(mockRepository);
-        //When
-        var result = SUT.prepareGreeting(null, "abc");
-        //Then
-        assertEquals(FALLBACK_ID_WELCOME + " " + GreetingService.FALLBACK_NAME + "!", result);
+        assertEquals(FALLBACK_ID_WELCOME + " " + GreetingService.FALLBACK_NAME + " !", result);
     }
 
     @Test
@@ -68,9 +57,9 @@ class GreetingServiceTest {
         };
         GreetingService SUT = new GreetingService(mockRepository);
         //When
-        var result = SUT.prepareGreeting(null, "-1");
+        var result = SUT.prepareGreeting(null, -1L);
         //Then
-        assertEquals(WELCOME + " " + GreetingService.FALLBACK_NAME + "!", result);
+        assertEquals(WELCOME + " " + GreetingService.FALLBACK_NAME + " !", result);
     }
 
     private static LangRepository fallbackLangIdRepository() {

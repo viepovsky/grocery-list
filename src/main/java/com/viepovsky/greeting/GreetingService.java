@@ -22,16 +22,11 @@ class GreetingService {
         this.langRepository = langRepository;
     }
 
-    String prepareGreeting(String name, String lang) {
-        Long langId;
-        try {
-            langId = Optional.ofNullable(lang).map(Long::valueOf).orElse(FALLBACK_LANG.getId());
-        } catch (NumberFormatException e) {
-            logger.warn("Non-numeric language id used: " + lang);
-            langId = FALLBACK_LANG.getId();
-        }
+    String prepareGreeting(String name, Long langId) {
+        logger.info("Preparing greeting for name: " + name);
+        langId = Optional.ofNullable(langId).orElse(FALLBACK_LANG.getId());
         String welcomeMessage = langRepository.findById(langId).orElse(FALLBACK_LANG).getWelcomeMessage();
         String nameToWelcome = Optional.ofNullable(name).orElse(FALLBACK_NAME);
-        return welcomeMessage + " " + nameToWelcome + "!";
+        return welcomeMessage + " " + nameToWelcome + " !";
     }
 }

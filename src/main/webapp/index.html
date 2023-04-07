@@ -2,72 +2,96 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ULTIMATE TODO LIST</title>
+    <title>GROCERY LIST</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
           integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
 </head>
 <body>
 <main style="width: 40%; margin: 0 auto">
     <div id="welcome" style="text-align: center">
-        <h1>Introduce yourself</h1>
+        <h1>What is your name?</h1>
     </div>
     <form id="welcomeForm" class="pure-form pure-g pure-form-aligned">
         <input class="pure-input-rounded pure-u-1" name="name" placeholder="name">
+    </form>
+    <h4 id="selectGreetingText" style="text-align: center; margin-top: 20px; margin-bottom: 5px;">Select greeting:</h4>
+    <form id="welcomeForm2" class="pure-form pure-g pure-form-aligned">
         <fieldset id="langs" class="pure-u-1 pure-control-group">Loading...</fieldset>
         <button id="btn" class="pure-button pure-button-primary pure-u-1">Submit</button>
     </form>
-    <form id="todoForm" class="pure-form" style="display: none; text-align: center">
+    <form id="groceryListForm" class="pure-form" style="display: none; text-align: center">
         <fieldset>
-            <input id="todoText" class="pure-input-rounded pure-input-2-3" placeholder="new TODO">
-            <button id="addTodo" class="pure-button pure-button-primary">+</button>
+            <input id="toBuyItem" class="pure-input-rounded pure-input-2-3" placeholder="New item to buy:">
+            <button id="addToBuyItem" class="pure-button pure-button-primary">+</button>
         </fieldset>
-        <fieldset id="allTodos"></fieldset>
+        <fieldset id="groceryList"></fieldset>
+        <fieldset id="deleteSet">
+            <button id="deleteButton" style="margin-top: 0" class="pure-button pure-button-primary">Delete all</button>
+        </fieldset>
     </form>
 </main>
 <script>
     (function() {
         const API_URL = 'http://localhost:8080/api';
-        const TODO_API_URL = `${API_URL}/todos`;
+        const GROCERY_LIST_API_URL = `${API_URL}/grocery`;
 
-        const todoText = document.getElementById('todoText');
+        const toBuyText = document.getElementById('toBuyItem');
 
-        fetch(TODO_API_URL)
+        let user = "";
+
+        function deleteButtonListener() {
+            document.getElementById('deleteButton').addEventListener('click', (event) => {
+                event.preventDefault();
+                    fetch(GROCERY_LIST_API_URL, {method: 'DELETE'})
+                        .then(processOkResponse)
+                        .catch(console.warn);
+                document.getElementById('groceryList').innerHTML = '';
+            });
+        }
+
+        fetch(GROCERY_LIST_API_URL)
             .then(processOkResponse)
-            .then(todos => todos.forEach(createNewTodo));
+            .then(toBuys => toBuys.forEach(createNewToBuy))
+            .then(deleteButtonListener);
 
-        document.getElementById('addTodo').addEventListener('click', (event) => {
+        document.getElementById('addToBuyItem').addEventListener('click', (event) => {
             event.preventDefault();
-            fetch(TODO_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: todoText.value })
-            })
-                .then(processOkResponse)
-                .then(createNewTodo)
-                .then(() => todoText.value = '')
-                .catch(console.warn);
+            if (toBuyText.value.trim() !== '') {
+                fetch(GROCERY_LIST_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: toBuyText.value, created: user })
+                })
+                    .then(processOkResponse)
+                    .then(createNewToBuy)
+                    .then(() => toBuyText.value = '')
+                    .catch(console.warn);
+            } else {
+                alert("Given text is not valid. Text must contain at least one letter or number.");
+            }
         });
 
-        function createNewTodo(todo) {
+        function createNewToBuy(toBuy) {
             const label = document.createElement('label');
             label.classList.add('pure-checkbox');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = todo.done;
+            checkbox.checked = toBuy.bought;
             checkbox.addEventListener('click',
                 (event) => {
                     event.preventDefault();
-                    fetch(`${TODO_API_URL}/${todo.id}`, { method: 'PUT' })
+                    fetch(`${GROCERY_LIST_API_URL}/${toBuy.id}`, { method: 'PUT' })
                         .then(processOkResponse)
-                        .then(updatedTodo => checkbox.checked = !!updatedTodo.done)
+                        .then(updatedToBuy => checkbox.checked = !!updatedToBuy.bought)
                         .catch(console.warn);
                 });
             label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(` ${todo.text}`));
-            document.getElementById('allTodos').appendChild(label);
+            label.appendChild(document.createTextNode(` ${toBuy.text}`));
+            label.appendChild(document.createTextNode(` -->  added by: ${toBuy.created}`))
+            document.getElementById('groceryList').appendChild(label);
         }
 
         initWelcomeForm();
@@ -93,22 +117,32 @@
 
         function initWelcomeFormClick() {
             const welcomeForm = document.getElementById('welcomeForm');
+            const welcomeForm2 = document.getElementById('welcomeForm2');
+            const selectGreetingText = document.getElementById('selectGreetingText');
 
             document.getElementById('btn').addEventListener('click', (event) => {
                 event.preventDefault();
-                const formObj = {
-                    name: welcomeForm.elements.name.value,
-                    lang: welcomeForm.elements.lang.value
-                };
-                fetch(`${API_URL}?${new URLSearchParams(formObj)}`)
-                    .then(response => response.text())
-                    .then((text) => {
-                        document.getElementById('welcome').innerHTML = `
+                if (welcomeForm.elements.name.value.trim() !== '') {
+                    const formObj = {
+                        name: welcomeForm.elements.name.value,
+                        lang: welcomeForm2.elements.lang.value
+                    };
+                    fetch(`${API_URL}?${new URLSearchParams(formObj)}`)
+                        .then(response => response.text())
+                        .then((text) => {
+                            document.getElementById('welcome').innerHTML = `
                 <h1>${text}</h1>
+                <h3>Here is ours grocery list:</h3>
             `;
-                        welcomeForm.remove();
-                        document.getElementById('todoForm').style.display = 'block';
-                    });
+                            user = text.split(" ")[1];
+                            welcomeForm.remove();
+                            welcomeForm2.remove();
+                            selectGreetingText.remove();
+                            document.getElementById('groceryListForm').style.display = 'block';
+                        });
+                } else {
+                    alert("Given name is not valid. Name must contain at least one letter or number.");
+                }
             });
         }
 
